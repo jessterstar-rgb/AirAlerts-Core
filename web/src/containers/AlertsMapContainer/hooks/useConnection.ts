@@ -1,18 +1,15 @@
-"use client";
-
-import dynamic from "next/dynamic";
-
-const AlertsMap = dynamic(() => import("../components/AlertsMap/AlertsMap"), {
-  ssr: false,
-});
-
 import { useEffect, useState } from "react";
 
 type AlertsState = Record<string, boolean>;
 
-export default function Home() {
+type UseConnectionReturnType = {
+  alerts: AlertsState;
+  isConnected: boolean;
+};
+
+export const useConnection = (): UseConnectionReturnType => {
   const [alerts, setAlerts] = useState<AlertsState>({});
-  const [connected, setConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     const conn: {
@@ -25,7 +22,7 @@ export default function Home() {
       const ws = new WebSocket("ws://localhost:5031/ws");
       conn.ws = ws;
 
-      ws.onopen = () => setConnected(true);
+      ws.onopen = () => setIsConnected(true);
 
       ws.onmessage = (e) => {
         const msg = JSON.parse(e.data);
@@ -38,7 +35,7 @@ export default function Home() {
       };
 
       ws.onclose = () => {
-        setConnected(false);
+        setIsConnected(false);
         if (!conn.stopped) {
           conn.timer = setTimeout(connect, 2000);
         }
@@ -54,17 +51,5 @@ export default function Home() {
     };
   }, []);
 
-  return (
-    <main>
-      <h1>Тривоги</h1>
-      <AlertsMap />
-      <p>{connected ? "🟢 підключено" : "🔴 немає з'єднання, пробую знову..."}</p>
-
-      {Object.entries(alerts).map(([region, active]) => (
-        <div key={region}>
-          {region}: {active ? "🔴 тривога" : "🟢 чисто"}
-        </div>
-      ))}
-    </main>
-  );
-}
+  return { alerts, isConnected };
+};
