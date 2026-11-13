@@ -15,7 +15,6 @@ export default function Home() {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    // змінні значення живуть як поля const-об'єкта
     const conn: {
       ws?: WebSocket;
       timer?: ReturnType<typeof setTimeout>;
@@ -56,16 +55,16 @@ export default function Home() {
   }, []);
 
   return (
-      <main>
-        <h1>Тривоги</h1>
-        <AlertsMap />
-        <p>{connected ? "🟢 підключено" : "🔴 немає з'єднання, пробую знову..."}</p>
+    <main>
+      <h1>Тривоги</h1>
+      <AlertsMap />
+      <p>{connected ? "🟢 підключено" : "🔴 немає з'єднання, пробую знову..."}</p>
 
-        {Object.entries(alerts).map(([region, active]) => (
-            <div key={region}>
-              {region}: {active ? "🔴 тривога" : "🟢 чисто"}
-            </div>
-        ))}
-      </main>
+      {Object.entries(alerts).map(([region, active]) => (
+        <div key={region}>
+          {region}: {active ? "🔴 тривога" : "🟢 чисто"}
+        </div>
+      ))}
+    </main>
   );
 }
