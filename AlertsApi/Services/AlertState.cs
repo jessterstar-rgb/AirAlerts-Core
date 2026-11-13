@@ -7,13 +7,12 @@ public static class AlertState
     public static readonly ConcurrentDictionary<string, bool> Alerts = new()
     {
         ["Kyiv"] = false,
-        ["Lviv"] = true
+        ["Lviv"] = true,
     };
 
     public static readonly ConcurrentDictionary<Guid, WebSocket> Clients = new();
 
-    public static readonly JsonSerializerOptions JsonOptions =
-        new(JsonSerializerDefaults.Web);
+    public static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     public static async Task Broadcast(object message)
     {
@@ -23,7 +22,12 @@ public static class AlertState
             try
             {
                 if (socket.State == WebSocketState.Open)
-                    await socket.SendAsync(bytes, WebSocketMessageType.Text, true, CancellationToken.None);
+                    await socket.SendAsync(
+                        bytes,
+                        WebSocketMessageType.Text,
+                        true,
+                        CancellationToken.None
+                    );
                 else
                     Clients.TryRemove(id, out _);
             }
