@@ -1,0 +1,1 @@
+public record AlertDto(string Region, bool Active);
