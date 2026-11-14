@@ -1,0 +1,29 @@
+.map {
+    width: 100%;
+    height: auto;
+    max-height: 80vh;
+}
+
+.calm,
+.active {
+    stroke: #ffffff;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    transition: fill 0.4s ease;
+}
+
+.calm {
+    fill: #cfd8dc;
+}
+
+.calm:hover {
+    fill: #b0bec5;
+}
+
+.active {
+    fill: #e53935;
+}
+
+.active:hover {
+    fill: #c62828;
+}

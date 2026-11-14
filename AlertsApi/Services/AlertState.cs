@@ -16,7 +16,7 @@ public static class AlertState
 
     // увесь стан як масив, у порядку довідника
     public static IReadOnlyList<AlertDto> GetAll() =>
-        Regions.All.Select(r => new AlertDto(r.Id, r.Name, Alerts[r.Id])).ToList();
+        [.. Regions.All.Select(r => new AlertDto(r.Id, r.Name, Alerts[r.Id]))];
 
     public static AlertDto? Get(string regionId)
     {
@@ -30,18 +30,16 @@ public static class AlertState
     public static async Task<AlertDto?> SetActiveAsync(string regionId, bool isActive)
     {
         var region = Regions.FindById(regionId);
-        if (region is null)
-        {
-            return null;
-        }
+
+        if (region is null) return null;
 
         var dto = new AlertDto(region.Id, region.Name, isActive);
 
-        if (Alerts[region.Id] != isActive)
-        {
-            Alerts[region.Id] = isActive;
-            await Broadcast(new { type = "change", data = dto });
-        }
+        if (Alerts[region.Id] == isActive) return dto;
+
+        Alerts[region.Id] = isActive;
+
+        await Broadcast(new { type = "change", data = dto });
 
         return dto;
     }

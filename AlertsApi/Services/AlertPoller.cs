@@ -1,14 +1,10 @@
+using AlertsApi.Models;
+
 namespace AlertsApi.Services;
 
-public class AlertPoller : BackgroundService
+public class AlertPoller(AlertsInUaClient client) : BackgroundService
 {
     private static readonly TimeSpan PollInterval = TimeSpan.FromSeconds(20);
-    private readonly AlertsInUaClient _client;
-
-    public AlertPoller(AlertsInUaClient client)
-    {
-        _client = client;
-    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -16,21 +12,30 @@ public class AlertPoller : BackgroundService
         {
             try
             {
-                var response = await _client.GetActiveAlertsAsync(stoppingToken);
+                var response = await client.GetActiveAlertsAsync(stoppingToken);
 
                 if (response is not null)
                 {
-                    var byOblast = response.Alerts
-                        .Where(a => a.AlertType == "air_raid")
-                        .GroupBy(a => a.LocationOblast)
-                        .Select(g => $"{g.Key}: {g.Count()}");
 
-                    Console.WriteLine($"[{DateTime.Now:T}] {string.Join(" | ", byOblast)}");
+                    var activeNames = response.Alerts
+                        .Where(a => a.AlertType == "air_raid")
+                        .Select(a => a.LocationOblast)
+                        .ToHashSet();
+
+                    foreach (var activeRegion in activeNames.Where(activeRegion => Regions.FindByName(activeRegion) is null))
+                    {
+                        Console.WriteLine($"Region {activeRegion} not found in the Regions dictionary");
+                    }
+
+                    foreach (var region in Regions.All)
+                    {
+                        await AlertState.SetActiveAsync(region.Id, activeNames.Contains(region.Name));
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Помилка опитування: {ex.Message}");
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
 
             await Task.Delay(PollInterval, stoppingToken);

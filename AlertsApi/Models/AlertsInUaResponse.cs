@@ -18,5 +18,6 @@ public record AlertsInUaAlert(
 public record AlertsInUaThreat(
     string ThreatType,
     string Level,
-    DateTimeOffset StartedAt
+    DateTimeOffset StartedAt,
+    string SourceMessage
 );

@@ -17,7 +17,7 @@ public static class AlertEndpoints
 
         app.MapGet("/ping", () => "pong");
 
-        app.MapGet("/alerts", () => AlertState.GetAll());
+        app.MapGet("/alerts", AlertState.GetAll);
 
         app.MapGet("/alerts/{regionId}", IResult (string regionId) =>
         {

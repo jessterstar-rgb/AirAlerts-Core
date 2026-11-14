@@ -1,12 +1,12 @@
+"use client";
+
 import { AlertsMap } from "@/components/AlertsMap/AlertsMap";
 import { useConnection } from "@/containers/AlertsMapContainer/hooks/useConnection";
 
 export const AlertsMapContainer: React.FC = () => {
-  const { isConnected, alerts } = useConnection();
+    const { alerts } = useConnection();
 
-  console.log({ isConnected, alerts });
-
-  return <AlertsMap />;
+    return alerts ? <AlertsMap regions={alerts} /> : null;
 };
 
 export default AlertsMapContainer;
