@@ -1,3 +1,5 @@
+using AlertsApi.Services;
+
 namespace AlertsApi.Endpoints;
 
 using System.Net.WebSockets;
@@ -7,7 +9,7 @@ public static class WebSocketEndpoints
 {
     public static void Map(WebApplication app)
     {
-        app.Map("/ws", async (HttpContext ctx) =>
+        app.Map("/ws", async ctx =>
         {
             if (!ctx.WebSockets.IsWebSocketRequest)
             {
@@ -22,9 +24,7 @@ public static class WebSocketEndpoints
             try
             {
                 var snapshot = JsonSerializer.SerializeToUtf8Bytes(
-                    new { type = "snapshot", data = AlertState.Alerts },
-                    AlertState.JsonOptions
-                );
+                    new { type = "snapshot", data = AlertState.GetAll() }, AlertState.JsonOptions);
                 await ws.SendAsync(snapshot, WebSocketMessageType.Text, true, ctx.RequestAborted);
 
                 var buffer = new byte[1024];

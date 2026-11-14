@@ -4,20 +4,13 @@ using AlertsApi.Models;
 
 namespace AlertsApi.Services;
 
-public class AlertsInUaClient
+public class AlertsInUaClient(HttpClient httpClient)
 {
     private static readonly JsonSerializerOptions Options = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
     };
 
-    private readonly HttpClient _httpClient;
-
-    public AlertsInUaClient(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-
     public Task<AlertsInUaResponse?> GetActiveAlertsAsync(CancellationToken ct) =>
-        _httpClient.GetFromJsonAsync<AlertsInUaResponse>("v1/alerts/active.json", Options, ct);
+        httpClient.GetFromJsonAsync<AlertsInUaResponse>("v1/alerts/active.json", Options, ct);
 }
